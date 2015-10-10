@@ -1,0 +1,38 @@
+<html>
+
+<head>
+	<title>Game of Life</title>
+	<script src="library.js"></script>
+</head>
+
+<body>
+
+<h3>Game of Life</h3>
+
+<p>
+<h4 id="statusText">Iteration: 0</h4><br>
+<button type="button" name="iButton" onClick="grid=iterateLife(grid); drawGrid(context, grid); updateStatus(`statusText`);">iterate</button>
+</p>
+
+<canvas id="myCanvas" width="600" height="600"></canvas>
+
+<script>
+	var canv = document.getElementById("myCanvas"); // ???
+	var context = canv.getContext("2d"); // ???
+
+	// run following two functions to set initial state of alive/dead blocks
+	var grid = createGrid();
+
+	// add setInitial function to create random initial setting
+	grid[34][21] = 1
+	grid[34][22] = 1
+	grid[34][23] = 1
+	grid[21][20] = 1
+	grid[19][56] = 1
+
+	drawGrid(context, grid);
+</script>
+
+</body>
+
+</html>
