@@ -37,7 +37,7 @@ for (var i = 0; i < 400; i+=4) {
 // return this local variable to global environment ????
 
 var createGrid = function() {
-    // create empty array for all rows of grid
+    // create empty array to stand for the whole grid
     var grid = [];
 
     /****** loop 100 times (to put 100 arrays like 'row' into 'grid': ********/
@@ -51,7 +51,7 @@ var createGrid = function() {
         }
         // put array row as an element of array grid
         grid[i] = row;
-    }
+    } // now grid is embeded with 100*100 values in 0
 
 
     /**** return grid to global environment ??
@@ -72,7 +72,8 @@ var drawGrid = function(grid) {
 		for (var j = 0; j < gridSize; j++) {
 
 			pushMatrix();
-			translate(i, j);
+            // i*4 and j*4 make frame to move to right position to draw a square
+			translate(i*4, j*4);
             // grid[i][j] decide the color of square
 			drawSquare(grid[i][j]);
 			popMatrix();
@@ -81,11 +82,15 @@ var drawGrid = function(grid) {
 	}
 };
 
+// test
+var grid = createGrid();
+grid[40][50] = 1;
+drawGrid(grid);
 
 /************************************************************** func: check cell alive or not ****************************************************************/
 
 var isAlive = function(grid, x, y) {
-    // if cell is off grid or at the bottom or right edge of grid
+    // if cell is off grid, as grid[-1][j] or grid[i][100] is off grid
     if (x < 0 || x > gridSize-1 || y < 0 || y > gridSize-1) {
         // return value 0 meaning dead
 		return 0;
@@ -96,6 +101,11 @@ var isAlive = function(grid, x, y) {
 	return grid[x][y];
 	}
 };
+
+// test
+grid[40][50] = 1;
+var alive = isAlive(grid, 40, 50);
+println(alive);
 
 
 /*************************************************** func: sum of values of surrounding cells of a cell ****************************************************************************************************************/
@@ -117,6 +127,11 @@ var numNeighbors = function(grid, i, j) {
 	return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8;
 };
 
+// test
+grid[40][51] = 1;
+grid[40][52] = 1;
+drawGrid(grid);
+println(numNeighbors(grid, 39, 51));
 
 
 
@@ -124,7 +139,7 @@ var numNeighbors = function(grid, i, j) {
 
 var iterateLife = function(grid) {
 
-    // create a grid in theory and assign it to tmpGrid
+    // create a grid in theory and assign it to tmpGrid, all cells are dead at the moment
 	var tmpGrid = createGrid();
 
 	// loop through every cell
@@ -135,7 +150,7 @@ var iterateLife = function(grid) {
 			var total = numNeighbors(grid, i, j);
 
 			// if a specific cell in original grid is alive (value as 1)
-			if(grid[i][j]) {
+			if(grid[i][j] === 1) {
 
 				// rule 1: if this alive cell surrounded by less than 2 or more than 3 alive cells
 				if(total < 2 || total > 3) {
@@ -175,11 +190,25 @@ var iterateLife = function(grid) {
 
 	// return the new grid and exit
 	// return tmpGrid;
-	drawGrid(tmpGrid);
+    grid = tmpGrid;
+	drawGrid(grid);
+    return grid;
 };
 
+// test
+// --- this line of code does two things: first run iterateLife(), second assign grid with the value of tmpGrid
+// --- to be combined with draw(), mouseClicked()
+grid = iterateLife(grid);
+grid = iterateLife(grid);
 
-
+// check out where are alive cells
+for (var i = 0; i < gridSize; i++) {
+    for (var j = 0; j < gridSize; j++) {
+        if (grid[i][j] === 1) {
+            println("x"+i+"j"+j);
+        }
+    }
+}
 /**************************************************** func: update the status of iteration ****************************************************************************************************************/
 
 
@@ -200,10 +229,13 @@ var updateStatus = function(grid) {
 		}
 	}
 
-	text("Total Iterations: " + iterations + "totalAlive: " + totalAlive, 100, 50);
+	text("Total Iterations: " + iterations + "      totalAlive: " + totalAlive, 100, 50);
+    println("Total Iterations: " + iterations + "      totalAlive: " + totalAlive);
 	//document.getElementById(eID).firstChild.nodeValue = "Iteration: " + iterations + ", Alive: " + totalAlive; ???
 };
 
+// test
+updateStatus(grid);
 
 
 /*********************************************************** func: draw initial scene  *******************************************************************************************************************************/
@@ -211,35 +243,37 @@ var updateStatus = function(grid) {
 var drawScene1 = function() {
 
     // automatically create in theory a grid with all dead cells and return variable `grid`
-    var grid = createGrid();
+    var initGrid = createGrid();
 
-    // loop almost every cell in grid except cells on four edges
-    for (var i = 1; i < gridSize-1; i++) {
-        for (var j = 1; j < gridSize-1; j++) {
+    // loop every cell in grid except cells on four edges
+    for (var i = 0; i < gridSize; i++) {
+        for (var j = 0; j < gridSize; j++) {
 
             // make random 0 or 1 for each cell
-            grid[i][j] = round(random(0, 1));
+            initGrid[i][j] = round(random(0, 1));
 
             // count number of alive cells in total
-            if (grid[i][j] === 1) {
+            if (initGrid[i][j] === 1) {
                 totalAlive++;
             }
 
             // if totalAlive is more than 20, then break the second for loop
-            if (totalAlive > 20) {
+            if (totalAlive > 100) {
                 break;
             }
         }
 
         // if totalAlive is more than 20, then break the first for loop
-        if (totalAlive > 20) {
+        if (totalAlive > 100) {
             break;
         }
     }
 
     // draw the grid made above
-    drawGrid(grid);
+    drawGrid(initGrid);
+    return initGrid;
 };
 
-
+// test
+var grid1 = drawScene1();
 /******************************************************* Main Program to build ***********************************************************************************************************************************/
