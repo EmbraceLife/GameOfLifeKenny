@@ -18,19 +18,19 @@ var drawSquare = function(gridValue) {
     rect(0, 0, pixelSize, pixelSize);
 };
 
-// test drawSquare
-drawSquare(0);
-for (var i = 0; i < 400; i+=4) {
-    pushMatrix();
-    translate(0, i);
-    drawSquare(0);
-    popMatrix();
-
-    pushMatrix();
-    translate(i, 0);
-    drawSquare(1);
-    popMatrix();
-}
+// ************    test     **********
+// drawSquare(0);
+// for (var i = 0; i < 400; i+=4) {
+//     pushMatrix();
+//     translate(0, i);
+//     drawSquare(0);
+//     popMatrix();
+//
+//     pushMatrix();
+//     translate(i, 0);
+//     drawSquare(1);
+//     popMatrix();
+// }
 
 /******************************************************* func: create grid/board in theory *******************************************************************************************************************/
 // create a local variable grid with all cells dead at first
@@ -82,10 +82,10 @@ var drawGrid = function(grid) {
 	}
 };
 
-// test
-var grid = createGrid();
-grid[40][50] = 1;
-drawGrid(grid);
+// ************    test     **********
+// var grid = createGrid();
+// grid[40][50] = 1;
+// drawGrid(grid);
 
 /************************************************************** func: check cell alive or not ****************************************************************/
 
@@ -102,10 +102,10 @@ var isAlive = function(grid, x, y) {
 	}
 };
 
-// test
-grid[40][50] = 1;
-var alive = isAlive(grid, 40, 50);
-println(alive);
+// ************    test     **********
+// grid[40][50] = 1;
+// var alive = isAlive(grid, 40, 50);
+// println(alive);
 
 
 /*************************************************** func: sum of values of surrounding cells of a cell ****************************************************************************************************************/
@@ -127,11 +127,11 @@ var numNeighbors = function(grid, i, j) {
 	return n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8;
 };
 
-// test
-grid[40][51] = 1;
-grid[40][52] = 1;
-drawGrid(grid);
-println(numNeighbors(grid, 39, 51));
+// ************    test     **********
+// grid[40][51] = 1;
+// grid[40][52] = 1;
+// drawGrid(grid);
+// println(numNeighbors(grid, 39, 51));
 
 
 
@@ -195,47 +195,50 @@ var iterateLife = function(grid) {
     return grid;
 };
 
-// test
-// --- this line of code does two things: first run iterateLife(), second assign grid with the value of tmpGrid
-// --- to be combined with draw(), mouseClicked()
-grid = iterateLife(grid);
-grid = iterateLife(grid);
-
-// check out where are alive cells
-for (var i = 0; i < gridSize; i++) {
-    for (var j = 0; j < gridSize; j++) {
-        if (grid[i][j] === 1) {
-            println("x"+i+"j"+j);
-        }
-    }
-}
+// ************    test     **********
+// // --- this line of code does two things: first run iterateLife(), second assign grid with the value of tmpGrid
+// // --- to be combined with draw(), mouseClicked()
+// grid = iterateLife(grid);
+// grid = iterateLife(grid);
+//
+// // check out where are alive cells
+// for (var i = 0; i < gridSize; i++) {
+//     for (var j = 0; j < gridSize; j++) {
+//         if (grid[i][j] === 1) {
+//             println("x"+i+"j"+j);
+//         }
+//     }
+// }
 /**************************************************** func: update the status of iteration ****************************************************************************************************************/
 
 
 // keep a record: inform us the current num of iterations and num of alive blocks
 var updateStatus = function(grid) {
 
-	//var totalAlive = 0;
 
-	// run through every cell in grid
+    // put totalAlive back to 0 and recalculate again
+    totalAlive = 0;
+
+    // run through every cell in grid
 	for (var i = 0; i < gridSize; i++) {
 		for (var j = 0; j < gridSize; j++) {
 
 			// if a cell is alive or 1
-			if(grid[i][j]) {
+			if(grid[i][j] === 1) {
 				// add 1 to totalAlive
 				totalAlive++;
 			}
 		}
 	}
 
-	text("Total Iterations: " + iterations + "      totalAlive: " + totalAlive, 100, 50);
-    println("Total Iterations: " + iterations + "      totalAlive: " + totalAlive);
+    fill(12, 240, 81);
+	text("Total Iterations: " + iterations + "      totalAlive: " + totalAlive, 100, 10);
+    //println("Total Iterations: " + iterations + "      totalAlive: " + totalAlive);
 	//document.getElementById(eID).firstChild.nodeValue = "Iteration: " + iterations + ", Alive: " + totalAlive; ???
 };
 
-// test
-updateStatus(grid);
+// ************    test     **********
+// updateStatus(grid);
 
 
 /*********************************************************** func: draw initial scene  *******************************************************************************************************************************/
@@ -249,12 +252,16 @@ var drawScene1 = function() {
     for (var i = 0; i < gridSize; i++) {
         for (var j = 0; j < gridSize; j++) {
 
-            // make random 0 or 1 for each cell
-            initGrid[i][j] = round(random(0, 1));
+            // make random value span larger from 0 to 100
+            var numRamdom = round(random(0, 50));
 
+            // give only 1/3 of cells chances to be alive
             // count number of alive cells in total
-            if (initGrid[i][j] === 1) {
+            if (numRamdom >= 0 && numRamdom <2) {
+                initGrid[i][j] = 1;
                 totalAlive++;
+            } else {
+                initGrid[i][j] = 0;
             }
 
             // if totalAlive is more than 20, then break the second for loop
@@ -274,6 +281,24 @@ var drawScene1 = function() {
     return initGrid;
 };
 
+// // test
+// var grid1 = drawScene1();
+// // reassign to the same name, it is easier for looping iterateLife()
+// var grid1 = iterateLife(grid1);
+// var grid1 = iterateLife(grid1);
+//
+// updateStatus(grid1);
+
+/******************************************************* Main Program to build ***********************************************************************************************************************************/
+
 // test
 var grid1 = drawScene1();
-/******************************************************* Main Program to build ***********************************************************************************************************************************/
+updateStatus(grid1);
+// reassign to the same name, it is easier for looping iterateLife()
+
+mouseClicked = function() {
+    grid1 = iterateLife(grid1);
+//grid1 = iterateLife(grid1);
+
+    updateStatus(grid1);
+};
